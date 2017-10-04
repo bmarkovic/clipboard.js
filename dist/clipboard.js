@@ -692,6 +692,7 @@ module.exports = E;
                 this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
                 this.text = typeof options.text === 'function' ? options.text : this.defaultText;
                 this.container = _typeof(options.container) === 'object' ? options.container : document.body;
+                this.ctrlClick = typeof options.ctrl === 'boolean' ? options.ctrl : false;
             }
         }, {
             key: 'listenClick',
@@ -707,16 +708,20 @@ module.exports = E;
             value: function onClick(e) {
                 var trigger = e.delegateTarget || e.currentTarget;
 
+                // if ctr+click is required but not keypressed die silently
+                if (this.ctrlClick && !e.ctrlKey) return;
+
                 if (this.clipboardAction) {
                     this.clipboardAction = null;
                 }
 
                 this.clipboardAction = new _clipboardAction2.default({
-                    action: this.action(trigger),
-                    target: this.target(trigger),
-                    text: this.text(trigger),
+                    action: this.action(trigger, e),
+                    target: this.target(trigger, e),
+                    text: this.text(trigger, e),
                     container: this.container,
                     trigger: trigger,
+                    event: e,
                     emitter: this
                 });
             }
